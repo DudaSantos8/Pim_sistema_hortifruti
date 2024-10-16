@@ -1,7 +1,7 @@
 #if !defined PRODUCT_h
 #define PRODUCT_h
 
-typedef struct Products{
+typedef struct{
     char produto[100];
     int calorias;
     float proteinas;
@@ -11,10 +11,9 @@ typedef struct Products{
     int porcao;
     int preco;
     char categoria[100];
-};
+}Product;
 
-void cadProduct (Products *products, int *quant ){
-
-}
+void cadProduct (Product *product, int *quant);
+void listProduct (Product *Products, int quant);
 
 #endif 

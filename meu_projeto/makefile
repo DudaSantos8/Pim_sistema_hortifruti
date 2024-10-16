@@ -1,25 +1,27 @@
-# Definições de variáveis
-CC = gcc                           # Compilador
-CFLAGS = -Iinclude                 # Diretório dos arquivos de cabeçalho
-SRC = src/main.c src/utils.c       # Arquivos fonte
-OBJ = build/main.o build/utils.o    # Arquivos objeto
-EXEC = meu_programa                # Nome do executável
+CC = gcc
+CFLAGS = -Iinclude
 
-# Regra padrão
-all: $(EXEC)
+# Diretórios
+SRC_DIR = src
+OBJ_DIR = build
+INC_DIR = include
 
-# Regra para criar o executável
-$(EXEC): $(OBJ)
-	$(CC) -o $(EXEC) $(OBJ)
+# Arquivos fonte
+SRCS = $(wildcard $(SRC_DIR)/*.c)
+OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 
-# Regra para compilar main.c
-build/main.o: src/main.c include/utils.h
-	$(CC) $(CFLAGS) -c src/main.c -o build/main.o
+# Nome do executável
+TARGET = meu_programa
 
-# Regra para compilar utils.c
-build/utils.o: src/utils.c include/utils.h
-	$(CC) $(CFLAGS) -c src/utils.c -o build/utils.o
+all: $(TARGET)
 
-# Limpa os arquivos compilados
+$(TARGET): $(OBJS)
+	$(CC) -o $@ $^
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
 clean:
-	rm -rf build/*.o $(EXEC)
+	rm -f $(OBJ_DIR)/*.o $(TARGET)
+
+.PHONY: all clean
