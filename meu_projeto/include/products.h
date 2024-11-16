@@ -4,19 +4,20 @@
 typedef struct{
     int cod_product;
     char product[100];
-    int calories;
+    char category[100];
+    float quantity;
+    float price;
+    float calories;
     float proteins;
     float carbohydrate;
     float fibers;
     float fats;
-    int portion;
-    int price;
-    char category[100];
 }Product;
 
-void cadProduct (Product *product, int *quant);
-void updateProduct(Product *product, int *quant, int cod_product);
-void listProduct (Product *Products, int quant);
-void cadAllProductsDB(Product *products, int *quant);
+void cad_product(Product *product, int *quant);
+void list_product(Product *Products, int quant);
+void cad_all_products_DB(Product *products, int *quant);
+Product read_product(int *cod_product);
+void update_product(int *cod_product, Product new_product);
 
 #endif 
