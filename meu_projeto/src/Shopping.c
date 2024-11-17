@@ -41,3 +41,30 @@ int count_lines(Product *products, int tamanho) {
 
     return count;
 }
+
+void save_invoice(Invoice *invoice) {
+    FILE *fp = fopen("data/historico_compras.csv", "a");
+    if (fp == NULL) {
+        printf("Erro ao abrir o arquivo de histórico.\n");
+        return;
+    }
+
+    fprintf(fp, "Data: %s\n", invoice->date);
+    fprintf(fp, "Quantidade de produtos: %d\n", invoice->quan_products);
+    fprintf(fp, "Preço Total: %.2f\n", invoice->price);
+    fprintf(fp, "Produtos:\n");
+
+    for (int i = 0; i < invoice->quan_products; i++) {
+        fprintf(fp, "%d,%s,%c,%.2f,%.2f\n", 
+                invoice->products[i].cod_product,
+                invoice->products[i].product,
+                invoice->products[i].type,
+                invoice->products[i].price,
+                invoice->products[i].quantity);
+    }
+
+    fprintf(fp, "\n");  // Adiciona uma linha em branco entre as notas fiscais
+
+    fclose(fp);
+    printf("Nota fiscal salva com sucesso!\n");
+}

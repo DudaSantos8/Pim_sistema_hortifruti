@@ -14,5 +14,6 @@ typedef struct{
 Invoice register_purchase(Product *products, int *quant);
 void show_invoice(Invoice *invoice, int *count, int price_final);
 int count_lines(Product *products, int tamanho);
+void save_invoice(Invoice *invoice);
 
 #endif 

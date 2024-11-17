@@ -8,7 +8,7 @@ int main(){
     Invoice invoice[100]; // Array da nota fiscal
     Product products_invoice[100];
     int n = 0; // Número de produtos cadastrados
-    int option, cod_product, option_geral;
+    int option = 0, cod_product = 0, option_geral = 0;
     cad_all_products_DB(products, &n);
 
     while (option_geral != 3){
@@ -65,13 +65,13 @@ int main(){
                 case 1:
                     int add = 0;
                     while (add != 1){
+                        int codigo = 0;
                         printf("Digite o código do produto: \n");
-                        scanf("%d", &cod_product);
-                        find_product(&cod_product, products_invoice, &count);
+                        scanf("%d", &codigo);
+                        find_product(&codigo, products_invoice, &count);
 
-                        if(products_invoice[count].product[0] == '\0'){
+                        if(products_invoice[count].product[0] == '\0' && count > 0){
                             count --;
-                            add = 1;
                         }
                         switch (add){
                         case 0:
@@ -81,13 +81,13 @@ int main(){
                                 printf("Digite quantos quilos são: \n");
                                 scanf("%d", &quant_product); 
                                 price_total += products_invoice[count].price * quant_product;
-                        }else if(products_invoice[count].type = 'u'){
-                            printf("Produto: %s\n", products_invoice[count].product);
-                            int quant_product = 0;
-                            printf("Digite quantas unidades são: \n");
-                            scanf("%d", &quant_product); 
-                            price_total += products_invoice[count].price * quant_product;
-                        }
+                            }else if(products_invoice[count].type == 'u'){
+                                printf("Produto: %s\n", products_invoice[count].product);
+                                int quant_product = 0;
+                                printf("Digite quantas unidades são: \n");
+                                scanf("%d", &quant_product); 
+                                price_total += products_invoice[count].price * quant_product;
+                            }
                             count++;
                             printf("0 para adicionar mais produtos 1 para sair: \n");
                             scanf("%d", &add); 
@@ -105,6 +105,7 @@ int main(){
                     printf("\nEmitindo nota fiscal...\n");
                     invoice[invoice_count] = register_purchase(products_invoice, &count);
                     show_invoice(invoice, &invoice_count, price_total);
+                    save_invoice(invoice);
                     invoice_count++;
                     // retorna nota fiscal
                     break;

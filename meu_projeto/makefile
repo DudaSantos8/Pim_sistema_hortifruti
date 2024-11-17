@@ -11,7 +11,7 @@ SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 
 # Nome do executável
-TARGET = meu_programa
+TARGET = my_program
 
 all: $(TARGET)
 
