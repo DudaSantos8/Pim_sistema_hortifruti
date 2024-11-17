@@ -16,8 +16,10 @@ typedef struct{
 
 void cad_product(Product *product, int *quant);
 void list_product(Product *Products, int quant);
+void show_product(Product product);
 void cad_all_products_DB(Product *products, int *quant);
 Product read_product(int *cod_product);
 void update_product(int *cod_product, Product new_product);
+void find_product(int *cod_product_find, Product *product);
 
 #endif 

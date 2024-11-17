@@ -66,6 +66,10 @@ void list_product(Product *products, int quant) {
     }
 }
 
+void show_product(Product product) {
+    printf("%.2f x %s (R$ %.2f cada)\n", product.quantity, product.product, product.price);
+}
+
 // add na lista de produtos do codigo todos que estão no banco
 void cad_all_products_DB(Product *products, int *quant){
     FILE* fp = fopen("data/produtos_cad.csv", "r");
@@ -171,7 +175,7 @@ Product read_product(int *cod_product){
 }
 
 
-// Função para atualizar uma linha no arquivo CSV
+// Add produto atualizado a lista
 void update_product(int *cod_product, Product new_product){
     FILE *fp = fopen("data/produtos_cad.csv", "r");
     FILE *temp_file = fopen("data/temp.csv", "w");
@@ -181,12 +185,12 @@ void update_product(int *cod_product, Product new_product){
         return;
     }
 
-    char linha[MAX_LINE_LENGTH];
+    char line[MAX_LINE_LENGTH];
     int updated_line = 0;
 
-    while (fgets(linha, MAX_LINE_LENGTH, fp)) {
+    while (fgets(line, MAX_LINE_LENGTH, fp)) {
         char copy_line[MAX_LINE_LENGTH];
-        strcpy(copy_line, linha);
+        strcpy(copy_line, line);
         
         char *campoStr = strtok(copy_line, ",");
         if(campoStr != NULL){
@@ -199,7 +203,7 @@ void update_product(int *cod_product, Product new_product){
                     new_product.proteins, new_product.carbohydrate, 
                     new_product.fibers, new_product.fats);
             updated_line = 1;
-            }else fprintf(temp_file, "%s", linha);
+            }else fprintf(temp_file, "%s", line);
         }
     }
 
@@ -215,4 +219,52 @@ void update_product(int *cod_product, Product new_product){
     } else {
         printf("Codigo %d não encontrado!\n", *cod_product);
     }
+}
+
+void find_product(int *cod_product_find, Product *product){
+    FILE *fp = fopen("data/produtos_cad.csv", "r");
+    if (fp == NULL){
+        printf("Can't open file\n");
+        return;
+    }
+    char line[100];
+
+    while (fgets(line, sizeof(line), fp)) {
+        // Declaração de variáveis para armazenar os dados lidos
+
+        int cod_product;
+        char product_name[100];
+        char category[100];
+        float quantity;
+        float price;
+        float calories;
+        float proteins;
+        float carbohydrate;
+        float fibers;
+        float fats;
+
+        // Usa sscanf para extrair os dados da linha
+        if (sscanf(line, "%d,%s,%s,%f,%f,%f,%f,%f,%f,%f", &cod_product, product_name,category, &quantity, &price, &calories,
+        &proteins, &carbohydrate, &fibers, &fats) == 10) {
+            // Se o código de busca for encontrado
+            if (cod_product == *cod_product_find) {
+                product->cod_product = *cod_product_find;
+                strcpy(product->product, product_name);
+                strcpy(product->category, category);
+                product->quantity = quantity;
+                product->price = price;
+                product->calories = calories;
+                product->proteins =proteins;
+                product->carbohydrate = carbohydrate;
+                product->fibers = fibers;
+                product->fats = fats;
+                fclose(fp);
+                return; // Produto encontrado
+            }
+        }
+    }
+
+    fclose(fp);
+    printf("Produto com código %ls não encontrado.\n", cod_product_find);
+    return; // Produto não encontrado
 }
