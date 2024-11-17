@@ -5,6 +5,7 @@ typedef struct{
     int cod_product;
     char product[100];
     char category[100];
+    char type;
     float quantity;
     float price;
     float calories;
@@ -20,6 +21,6 @@ void show_product(Product product);
 void cad_all_products_DB(Product *products, int *quant);
 Product read_product(int *cod_product);
 void update_product(int *cod_product, Product new_product);
-void find_product(int *cod_product_find, Product *product);
+void find_product(int *cod_product_find, Product *product, int *quant);
 
 #endif 

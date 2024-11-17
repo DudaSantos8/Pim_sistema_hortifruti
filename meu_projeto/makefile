@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Iinclude
+CFLAGS = -Iinclude -Wall -Wextra -g
 
 # Diretórios
 SRC_DIR = src

@@ -23,6 +23,9 @@ void cad_product(Product *products, int *quant){
     getchar();
     scanf("%[^\n]", products[*quant].category);
 
+    printf("Digite (q) se o produto for por quilo ou (u) se for por unidade: ");
+    scanf(" %c", &products[*quant].type);
+
     printf("Digite a quantidade do produto no estoque: ");
     scanf("%f", &products[*quant].quantity);
 
@@ -44,9 +47,9 @@ void cad_product(Product *products, int *quant){
     printf("Digite a gordura do produto: ");
     scanf("%f", &products[*quant].fats);
 
-    fprintf(fp, "%d,%s,%s,%f,%f,%f,%f,%f,%f,%f\n",
+    fprintf(fp, "%d,%s,%s,%c,%f,%f,%f,%f,%f,%f,%f\n",
         products[*quant].cod_product, products[*quant].product, 
-        products[*quant].category, products[*quant].quantity, 
+        products[*quant].category, products[*quant].type, products[*quant].quantity, 
         products[*quant].price, products[*quant].calories,
         products[*quant].proteins, products[*quant].carbohydrate, 
         products[*quant].fibers, products[*quant].fats);
@@ -67,7 +70,9 @@ void list_product(Product *products, int quant) {
 }
 
 void show_product(Product product) {
-    printf("%.2f x %s (R$ %.2f cada)\n", product.quantity, product.product, product.price);
+    if(product.product != NULL && product.product[0] != '\0'){
+        printf("%s (R$ %.2f cada)\n", product.product, product.price);
+    }
 }
 
 // add na lista de produtos do codigo todos que estão no banco
@@ -96,13 +101,16 @@ void cad_all_products_DB(Product *products, int *quant){
             if (value) {
                 has_value = 1;
 
-                value = strtok(NULL, ",");
                 sscanf(value, "%d", &products[*quant].cod_product);
 
+                value = strtok(NULL, ",");
                 strcpy(products[*quant].product, value);
 
                 value = strtok(NULL, ",");
-                sscanf(value, "%s", products[*quant].category);
+                strcpy(products[*quant].category, value);
+
+                value = strtok(NULL, ",");
+                sscanf(value, "%c", &products[*quant].type);
 
                 value = strtok(NULL, ",");
                 sscanf(value, "%f", &products[*quant].quantity);
@@ -150,6 +158,10 @@ Product read_product(int *cod_product){
         getchar();
         scanf("%[^\n]", p.category);
 
+        printf("Digite o tipo (q) para quilo ou (u) para unidade: ");
+        getchar();
+        scanf("%c", &p.type);
+
         printf("Digite a quantidade: ");
         scanf("%f", &p.quantity);
 
@@ -179,7 +191,7 @@ Product read_product(int *cod_product){
 void update_product(int *cod_product, Product new_product){
     FILE *fp = fopen("data/produtos_cad.csv", "r");
     FILE *temp_file = fopen("data/temp.csv", "w");
-    
+    Product product[100];
     if (fp == NULL || temp_file == NULL) {
         printf("Erro ao abrir o arquivo.\n");
         return;
@@ -196,9 +208,9 @@ void update_product(int *cod_product, Product new_product){
         if(campoStr != NULL){
             int campoID = atoi(campoStr);
             if( campoID == *cod_product) {
-                fprintf(temp_file, "%d,%s,%s,%f,%f,%f,%f,%f,%f,%f\n", 
+                fprintf(temp_file, "%d,%s,%s,%c,%f,%f,%f,%f,%f,%f,%f\n", 
                     new_product.cod_product, new_product.product, 
-                    new_product.category, new_product.quantity, 
+                    new_product.category, new_product.type, new_product.quantity, 
                     new_product.price, new_product.calories,
                     new_product.proteins, new_product.carbohydrate, 
                     new_product.fibers, new_product.fats);
@@ -213,7 +225,6 @@ void update_product(int *cod_product, Product new_product){
     // Substitui o arquivo original pelo arquivo temporário
     remove("data/produtos_cad.csv");
     rename("data/temp.csv", "data/produtos_cad.csv");
-
     if (updated_line) {
         printf("Produto com o codigo %d atualizado com sucesso!\n", *cod_product);
     } else {
@@ -221,7 +232,8 @@ void update_product(int *cod_product, Product new_product){
     }
 }
 
-void find_product(int *cod_product_find, Product *product){
+void find_product(int *cod_product_find, Product *product, int *quant){
+
     FILE *fp = fopen("data/produtos_cad.csv", "r");
     if (fp == NULL){
         printf("Can't open file\n");
@@ -235,6 +247,7 @@ void find_product(int *cod_product_find, Product *product){
         int cod_product;
         char product_name[100];
         char category[100];
+        char type;
         float quantity;
         float price;
         float calories;
@@ -244,20 +257,21 @@ void find_product(int *cod_product_find, Product *product){
         float fats;
 
         // Usa sscanf para extrair os dados da linha
-        if (sscanf(line, "%d,%s,%s,%f,%f,%f,%f,%f,%f,%f", &cod_product, product_name,category, &quantity, &price, &calories,
-        &proteins, &carbohydrate, &fibers, &fats) == 10) {
+        if (sscanf(line, "%d,%[^,],%[^,],%c,%f,%f,%f,%f,%f,%f,%f", &cod_product, product_name,category,&type, &quantity, &price, &calories,
+        &proteins, &carbohydrate, &fibers, &fats) == 11) {
             // Se o código de busca for encontrado
             if (cod_product == *cod_product_find) {
-                product->cod_product = *cod_product_find;
-                strcpy(product->product, product_name);
-                strcpy(product->category, category);
-                product->quantity = quantity;
-                product->price = price;
-                product->calories = calories;
-                product->proteins =proteins;
-                product->carbohydrate = carbohydrate;
-                product->fibers = fibers;
-                product->fats = fats;
+                product[*quant].cod_product = *cod_product_find;
+                strcpy(product[*quant].product, product_name);
+                strcpy(product[*quant].category, category);
+                product[*quant].type = type;
+                product[*quant].quantity = quantity;
+                product[*quant].price = price;
+                product[*quant].calories = calories;
+                product[*quant].proteins =proteins;
+                product[*quant].carbohydrate = carbohydrate;
+                product[*quant].fibers = fibers;
+                product[*quant].fats = fats;
                 fclose(fp);
                 return; // Produto encontrado
             }
@@ -265,6 +279,6 @@ void find_product(int *cod_product_find, Product *product){
     }
 
     fclose(fp);
-    printf("Produto com código %ls não encontrado.\n", cod_product_find);
+    printf("Produto com código %d não encontrado.\n", *cod_product_find);
     return; // Produto não encontrado
 }

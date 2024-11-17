@@ -11,7 +11,8 @@ typedef struct{
 }Invoice;
 // codigo_produto,quantidade,Preco,data,cliente
 
-void register_purchase(Invoice *invoice, Product *products);
-void show_invoice(Invoice *invoice);
+Invoice register_purchase(Product *products, int *quant);
+void show_invoice(Invoice *invoice, int *count, int price_final);
+int count_lines(Product *products, int tamanho);
 
 #endif 
